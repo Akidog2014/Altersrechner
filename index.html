@@ -7,20 +7,21 @@
 <title>Altersrechner</title>
 
 <style>
+
 body{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
     background:#f2f2f2;
     margin:0;
     padding:20px;
 }
 
 .container{
-    max-width:400px;
+    max-width:420px;
     margin:auto;
     background:white;
     padding:25px;
     border-radius:15px;
-    box-shadow:0 0 10px rgba(0,0,0,0.2);
+    box-shadow:0 0 15px rgba(0,0,0,0.2);
 }
 
 h1{
@@ -30,25 +31,29 @@ h1{
 
 label{
     font-weight:bold;
+    display:block;
+    margin-bottom:8px;
 }
 
 input{
     width:100%;
-    padding:12px;
-    font-size:18px;
-    margin-top:10px;
-    margin-bottom:20px;
     box-sizing:border-box;
+    padding:15px;
+    font-size:24px;
+    text-align:center;
+    border-radius:8px;
+    border:1px solid #999;
 }
 
 button{
     width:100%;
+    margin-top:20px;
     padding:15px;
-    font-size:18px;
-    background:#0066cc;
-    color:white;
+    font-size:20px;
     border:none;
     border-radius:8px;
+    background:#0066cc;
+    color:white;
     cursor:pointer;
 }
 
@@ -57,17 +62,19 @@ button:hover{
 }
 
 #ergebnis{
-    margin-top:25px;
-    font-size:20px;
+    margin-top:30px;
+    font-size:22px;
     text-align:center;
-    line-height:1.6;
+    line-height:1.7;
 }
 
 .massnahme{
-    font-size:24px;
+    margin-top:10px;
+    font-size:28px;
     font-weight:bold;
-    color:red;
+    color:#cc0000;
 }
+
 </style>
 
 </head>
@@ -78,9 +85,14 @@ button:hover{
 
 <h1>Altersrechner</h1>
 
-<label for="geburt">Geburtsdatum</label>
+<label>Geburtsdatum</label>
 
-<input type="date" id="geburt">
+<input
+type="text"
+id="geburt"
+placeholder="TTMMJJJJ"
+maxlength="10"
+oninput="datumFormatieren()">
 
 <button onclick="alterBerechnen()">
 Alter berechnen
@@ -92,56 +104,96 @@ Alter berechnen
 
 <script>
 
+function datumFormatieren(){
+
+    let feld=document.getElementById("geburt");
+
+    let wert=feld.value.replace(/\D/g,"");
+
+    if(wert.length>8){
+        wert=wert.substring(0,8);
+    }
+
+    if(wert.length>4){
+        wert=wert.replace(/(\d{2})(\d{2})(\d+)/,"$1.$2.$3");
+    }
+    else if(wert.length>2){
+        wert=wert.replace(/(\d{2})(\d+)/,"$1.$2");
+    }
+
+    feld.value=wert;
+}
+
 function alterBerechnen(){
 
-    let eingabe = document.getElementById("geburt").value;
+    let eingabe=document.getElementById("geburt").value;
 
-    if(eingabe==""){
-        document.getElementById("ergebnis").innerHTML="Bitte ein Geburtsdatum auswählen.";
+    if(eingabe.length!=10){
+        document.getElementById("ergebnis").innerHTML="Bitte ein gültiges Geburtsdatum eingeben.";
         return;
     }
 
-    let geburt = new Date(eingabe);
-    let heute = new Date();
+    let teile=eingabe.split(".");
 
-    let jahre = heute.getFullYear() - geburt.getFullYear();
-    let monate = heute.getMonth() - geburt.getMonth();
-    let tage = heute.getDate() - geburt.getDate();
+    let tag=parseInt(teile[0]);
+    let monat=parseInt(teile[1]);
+    let jahr=parseInt(teile[2]);
 
-    if(tage < 0){
-        monate--;
-        let letzterMonat = new Date(heute.getFullYear(), heute.getMonth(), 0);
-        tage += letzterMonat.getDate();
+    let geburt=new Date(jahr,monat-1,tag);
+
+    if(
+        geburt.getDate()!=tag ||
+        geburt.getMonth()!=monat-1 ||
+        geburt.getFullYear()!=jahr
+    ){
+        document.getElementById("ergebnis").innerHTML="Ungültiges Datum.";
+        return;
     }
 
-    if(monate < 0){
+    let heute=new Date();
+
+    let jahre=heute.getFullYear()-geburt.getFullYear();
+    let monate=heute.getMonth()-geburt.getMonth();
+    let tage=heute.getDate()-geburt.getDate();
+
+    if(tage<0){
+
+        monate--;
+
+        let letzterMonat=new Date(
+            heute.getFullYear(),
+            heute.getMonth(),
+            0
+        );
+
+        tage+=letzterMonat.getDate();
+    }
+
+    if(monate<0){
         jahre--;
-        monate += 12;
+        monate+=12;
     }
 
     let massnahme="";
 
-    if(jahre < 10){
+    if(jahre<10){
         massnahme="Ermahnt";
     }
-    else if(jahre < 16){
+    else if(jahre<16){
         massnahme="Schülerrapport";
     }
     else{
         massnahme="Ordnungsbusse";
     }
 
-    document.getElementById("ergebnis").innerHTML =
-        "<strong>Alter</strong><br>" +
-        jahre + " Jahre, " +
-        monate + " Monate, " +
-        tage + " Tage<br><br>" +
-
-        "<strong>Massnahme</strong><br>" +
-
-        "<div class='massnahme'>" +
-        massnahme +
-        "</div>";
+    document.getElementById("ergebnis").innerHTML=
+    "<b>Alter</b><br>"+
+    jahre+" Jahre<br>"+
+    monate+" Monate<br>"+
+    tage+" Tage"+
+    "<div class='massnahme'>"+
+    massnahme+
+    "</div>";
 
 }
 
