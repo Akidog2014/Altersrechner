@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Altersrechner</title>
+
+<style>
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f2f2f2;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:400px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+h1{
+    text-align:center;
+    color:#003366;
+}
+
+label{
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    font-size:18px;
+    margin-top:10px;
+    margin-bottom:20px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    font-size:18px;
+    background:#0066cc;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#004999;
+}
+
+#ergebnis{
+    margin-top:25px;
+    font-size:20px;
+    text-align:center;
+    line-height:1.6;
+}
+
+.massnahme{
+    font-size:24px;
+    font-weight:bold;
+    color:red;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Altersrechner</h1>
+
+<label for="geburt">Geburtsdatum</label>
+
+<input type="date" id="geburt">
+
+<button onclick="alterBerechnen()">
+Alter berechnen
+</button>
+
+<div id="ergebnis"></div>
+
+</div>
+
+<script>
+
+function alterBerechnen(){
+
+    let eingabe = document.getElementById("geburt").value;
+
+    if(eingabe==""){
+        document.getElementById("ergebnis").innerHTML="Bitte ein Geburtsdatum auswählen.";
+        return;
+    }
+
+    let geburt = new Date(eingabe);
+    let heute = new Date();
+
+    let jahre = heute.getFullYear() - geburt.getFullYear();
+    let monate = heute.getMonth() - geburt.getMonth();
+    let tage = heute.getDate() - geburt.getDate();
+
+    if(tage < 0){
+        monate--;
+        let letzterMonat = new Date(heute.getFullYear(), heute.getMonth(), 0);
+        tage += letzterMonat.getDate();
+    }
+
+    if(monate < 0){
+        jahre--;
+        monate += 12;
+    }
+
+    let massnahme="";
+
+    if(jahre < 10){
+        massnahme="Ermahnt";
+    }
+    else if(jahre < 16){
+        massnahme="Schülerrapport";
+    }
+    else{
+        massnahme="Ordnungsbusse";
+    }
+
+    document.getElementById("ergebnis").innerHTML =
+        "<strong>Alter</strong><br>" +
+        jahre + " Jahre, " +
+        monate + " Monate, " +
+        tage + " Tage<br><br>" +
+
+        "<strong>Massnahme</strong><br>" +
+
+        "<div class='massnahme'>" +
+        massnahme +
+        "</div>";
+
+}
+
+</script>
+
+</body>
+</html>
