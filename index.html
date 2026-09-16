@@ -106,93 +106,103 @@ Alter berechnen
 
 function datumFormatieren(){
 
-    let feld=document.getElementById("geburt");
+    let feld = document.getElementById("geburt");
 
-    let wert=feld.value.replace(/\D/g,"");
+    let wert = feld.value.replace(/\D/g,"");
 
-    if(wert.length>8){
-        wert=wert.substring(0,8);
+    if(wert.length > 8){
+        wert = wert.substring(0,8);
     }
 
-    if(wert.length>4){
-        wert=wert.replace(/(\d{2})(\d{2})(\d+)/,"$1.$2.$3");
+    if(wert.length > 4){
+        wert = wert.replace(/(\d{2})(\d{2})(\d+)/,"$1.$2.$3");
     }
-    else if(wert.length>2){
-        wert=wert.replace(/(\d{2})(\d+)/,"$1.$2");
+    else if(wert.length > 2){
+        wert = wert.replace(/(\d{2})(\d+)/,"$1.$2");
     }
 
-    feld.value=wert;
+    feld.value = wert;
 }
+
 
 function alterBerechnen(){
 
-    let eingabe=document.getElementById("geburt").value;
+    let eingabe = document.getElementById("geburt").value;
 
-    if(eingabe.length!=10){
-        document.getElementById("ergebnis").innerHTML="Bitte ein gültiges Geburtsdatum eingeben.";
+    if(eingabe.length != 10){
+        document.getElementById("ergebnis").innerHTML =
+        "Bitte ein gültiges Geburtsdatum eingeben.";
         return;
     }
 
-    let teile=eingabe.split(".");
+    let teile = eingabe.split(".");
 
-    let tag=parseInt(teile[0]);
-    let monat=parseInt(teile[1]);
-    let jahr=parseInt(teile[2]);
+    let tag = parseInt(teile[0]);
+    let monat = parseInt(teile[1]);
+    let jahr = parseInt(teile[2]);
 
-    let geburt=new Date(jahr,monat-1,tag);
+    let geburt = new Date(jahr, monat - 1, tag);
 
+    // Prüfen, ob das Datum tatsächlich gültig ist
     if(
-        geburt.getDate()!=tag ||
-        geburt.getMonth()!=monat-1 ||
-        geburt.getFullYear()!=jahr
+        geburt.getDate() != tag ||
+        geburt.getMonth() != monat - 1 ||
+        geburt.getFullYear() != jahr
     ){
-        document.getElementById("ergebnis").innerHTML="Ungültiges Datum.";
+        document.getElementById("ergebnis").innerHTML =
+        "Ungültiges Datum.";
         return;
     }
 
-    let heute=new Date();
+    let heute = new Date();
 
-    let jahre=heute.getFullYear()-geburt.getFullYear();
-    let monate=heute.getMonth()-geburt.getMonth();
-    let tage=heute.getDate()-geburt.getDate();
+    // Alter berechnen
+    let jahre = heute.getFullYear() - geburt.getFullYear();
+    let monate = heute.getMonth() - geburt.getMonth();
+    let tage = heute.getDate() - geburt.getDate();
 
-    if(tage<0){
+    if(tage < 0){
 
         monate--;
 
-        let letzterMonat=new Date(
+        let letzterMonat = new Date(
             heute.getFullYear(),
             heute.getMonth(),
             0
         );
 
-        tage+=letzterMonat.getDate();
+        tage += letzterMonat.getDate();
     }
 
-    if(monate<0){
+    if(monate < 0){
         jahre--;
-        monate+=12;
+        monate += 12;
     }
 
-    let massnahme="";
+    // Maßnahme bestimmen
+    // Ab dem 10. Geburtstag: Schülerrapport
+    // Ab dem 15. Geburtstag: Ordnungsbusse
 
-    if(jahre<10){
-        massnahme="Ermahnt";
+    let massnahme = "";
+
+    if(jahre < 10){
+        massnahme = "Ermahnt";
     }
-    else if(jahre<16){
-        massnahme="Schülerrapport";
+    else if(jahre < 15){
+        massnahme = "Schülerrapport";
     }
     else{
-        massnahme="Ordnungsbusse";
+        massnahme = "Ordnungsbusse";
     }
 
-    document.getElementById("ergebnis").innerHTML=
-    "<b>Alter</b><br>"+
-    jahre+" Jahre<br>"+
-    monate+" Monate<br>"+
-    tage+" Tage"+
-    "<div class='massnahme'>"+
-    massnahme+
+    // Ergebnis anzeigen
+    document.getElementById("ergebnis").innerHTML =
+    "<b>Alter</b><br>" +
+    jahre + " Jahre<br>" +
+    monate + " Monate<br>" +
+    tage + " Tage" +
+    "<div class='massnahme'>" +
+    massnahme +
     "</div>";
 
 }
